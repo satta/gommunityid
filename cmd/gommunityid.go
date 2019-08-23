@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	pcapCmd := flag.NewFlagSet("pcap", flag.ExitOnError)
 	pcapVersion := pcapCmd.Uint("version", 1, "Community ID version")
 	pcapSeed := pcapCmd.Uint("seed", 0, "seed value (default 0)")

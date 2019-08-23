@@ -19,7 +19,7 @@ func TestPcapFlowTupleSource(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		for _ = range ftChan {
+		for range ftChan {
 			i++
 		}
 		log.Printf("read %s with %d packets", testfile, i)
