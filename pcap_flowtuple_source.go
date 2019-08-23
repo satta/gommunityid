@@ -8,11 +8,17 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
+// PcapFlowTuple represents a pair of the FlowTuple for a packet as
+// well as its packet metadata (e.g. timestamp).
 type PcapFlowTuple struct {
 	FlowTuple FlowTuple
 	Metadata  *gopacket.PacketMetadata
 }
 
+// PcapFlowTupleSource returns, for a given pcap file name, a channel
+// delivering PcapFlowTuples for each packet in the file. If the file
+// cannot be read for some reason, an error is returned as well
+// accordingly.
 func PcapFlowTupleSource(file string) (<-chan PcapFlowTuple, error) {
 	outChan := make(chan PcapFlowTuple)
 	handle, err := pcap.OpenOffline(file)

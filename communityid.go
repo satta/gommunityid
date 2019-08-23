@@ -5,6 +5,8 @@ import (
 	"hash"
 )
 
+// CommunityID is an interface defining the supported operations
+// on a component calculating a specific community ID version.
 type CommunityID interface {
 	Calc(FlowTuple) []byte
 	CalcHex(FlowTuple) string
@@ -15,6 +17,9 @@ type CommunityID interface {
 	RenderBase64(hash.Hash) string
 }
 
+// GetCommunityIDByVersion returns, for a given version number and seed, an
+// object implementing the CommunityID interface for the specified version.
+// This will be preconfigured with the given seed.
 func GetCommunityIDByVersion(version uint, seed uint16) (CommunityID, error) {
 	switch version {
 	case 1:

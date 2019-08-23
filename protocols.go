@@ -1,5 +1,6 @@
 package gommunityid
 
+// Define protocol number constants.
 const (
 	ProtoICMP  = 1
 	ProtoTCP   = 6
