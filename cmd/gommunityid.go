@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
+	"strconv"
 
 	"github.com/satta/gommunityid"
 )
@@ -19,16 +21,16 @@ func main() {
 	tupleSeed := tupleCmd.Uint("seed", 0, "seed value (default 0)")
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'pcap' or 'tuple' subcommands")
+		fmt.Println("Usage: gommunityid <pcap|tuple> ...")
 		os.Exit(1)
 	}
 	switch os.Args[1] {
 	case "pcap":
 		pcapCmd.Parse(os.Args[2:])
 		if len(pcapCmd.Args()) == 0 {
-			log.Println("No input file given")
-			flag.PrintDefaults()
-			os.Exit(0)
+			fmt.Println("Usage: gommunityid pcap [options] <pcap-file>")
+			pcapCmd.PrintDefaults()
+			os.Exit(1)
 		}
 		ftChan, err := gommunityid.PcapFlowTupleSource(pcapCmd.Args()[0])
 		if err != nil {
@@ -50,8 +52,38 @@ func main() {
 		}
 	case "tuple":
 		tupleCmd.Parse(os.Args[2:])
-		fmt.Printf("not yet implemented")
-		_, _ = tupleSeed, tupleVersion
+		if len(tupleCmd.Args()) != 5 {
+			fmt.Println("Usage: gommunityid tuple [options] <proto> <srcip> <dstip> <srcport> <dstport>")
+			tupleCmd.PrintDefaults()
+			os.Exit(1)
+		}
+		cid, err := gommunityid.GetCommunityIDByVersion(*tupleVersion, uint16(*tupleSeed))
+		if err != nil {
+			log.Fatal(err)
+		}
+		srcip := net.ParseIP(tupleCmd.Args()[1])
+		if srcip == nil {
+			log.Fatalf("%s is not a valid IP address", tupleCmd.Args()[1])
+		}
+		dstip := net.ParseIP(tupleCmd.Args()[2])
+		if dstip == nil {
+			log.Fatalf("%s is not a valid IP address", tupleCmd.Args()[2])
+		}
+		srcport, err := strconv.ParseUint(tupleCmd.Args()[3], 16, 16)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dstport, err := strconv.ParseUint(tupleCmd.Args()[4], 16, 16)
+		if err != nil {
+			log.Fatal(err)
+		}
+		proto, err := strconv.ParseUint(tupleCmd.Args()[0], 8, 8)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ft := gommunityid.MakeFlowTuple(srcip, dstip, uint16(srcport), uint16(dstport), uint8(proto))
+		communityid := cid.CalcBase64(ft)
+		fmt.Printf("%s", communityid)
 	default:
 		fmt.Println("expected 'pcap' or 'tuple' subcommands")
 		os.Exit(1)
