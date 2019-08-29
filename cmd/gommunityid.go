@@ -69,21 +69,21 @@ func main() {
 		if dstip == nil {
 			log.Fatalf("%s is not a valid IP address", tupleCmd.Args()[2])
 		}
-		srcport, err := strconv.ParseUint(tupleCmd.Args()[3], 16, 16)
+		srcport, err := strconv.ParseUint(tupleCmd.Args()[3], 10, 16)
 		if err != nil {
 			log.Fatal(err)
 		}
-		dstport, err := strconv.ParseUint(tupleCmd.Args()[4], 16, 16)
+		dstport, err := strconv.ParseUint(tupleCmd.Args()[4], 10, 16)
 		if err != nil {
 			log.Fatal(err)
 		}
-		proto, err := strconv.ParseUint(tupleCmd.Args()[0], 8, 8)
+		proto, err := strconv.ParseUint(tupleCmd.Args()[0], 10, 8)
 		if err != nil {
 			log.Fatal(err)
 		}
 		ft := gommunityid.MakeFlowTuple(srcip, dstip, uint16(srcport), uint16(dstport), uint8(proto))
 		communityid := cid.CalcBase64(ft)
-		fmt.Printf("%s", communityid)
+		fmt.Printf("%s\n", communityid)
 	default:
 		fmt.Println("expected 'pcap' or 'tuple' subcommands")
 		os.Exit(1)
