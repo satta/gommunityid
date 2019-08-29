@@ -1,6 +1,7 @@
 # gommunityid
 
 [![CircleCI](https://circleci.com/gh/satta/gommunityid.svg?style=svg)](https://circleci.com/gh/satta/gommunityid)
+[![Coverage Status](https://coveralls.io/repos/github/satta/gommunityid/badge.svg?branch=master)](https://coveralls.io/github/satta/gommunityid?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/satta/gommunityid)](https://goreportcard.com/report/github.com/satta/gommunityid)
 [![Documentation](https://godoc.org/github.com/satta/gommunityid?status.svg)](http://godoc.org/github.com/satta/gommunityid)
 
