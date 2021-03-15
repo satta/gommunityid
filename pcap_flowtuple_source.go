@@ -2,10 +2,11 @@ package gommunityid
 
 import (
 	"net"
+	"os"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"github.com/google/gopacket/pcap"
+	"github.com/google/gopacket/pcapgo"
 )
 
 // PcapFlowTuple represents a pair of the FlowTuple for a packet as
@@ -21,7 +22,11 @@ type PcapFlowTuple struct {
 // accordingly.
 func PcapFlowTupleSource(file string) (<-chan PcapFlowTuple, error) {
 	outChan := make(chan PcapFlowTuple)
-	handle, err := pcap.OpenOffline(file)
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	handle, err := pcapgo.NewReader(f)
 	if err != nil {
 		return nil, err
 	}
