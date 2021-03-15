@@ -1,6 +1,7 @@
 package gommunityid
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -31,6 +32,7 @@ func verifyTuples(t *testing.T, ts []testSet, mf makeFunc) {
 		assert.Equal(t, tset.Base64Seed0, cid0.CalcBase64(ft))
 		assert.Equal(t, tset.HexSeed0, cid0.CalcHex(ft))
 		assert.Equal(t, tset.Base64Seed1, cid1.CalcBase64(ft))
+		assert.Equal(t, tset.HexSeed0, fmt.Sprintf("1:%x", cid0.Calc(ft)))
 	}
 }
 
