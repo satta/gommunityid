@@ -5,12 +5,6 @@ jobs:
       - image: cimg/go:1.14
     steps:
       - checkout
-      - run:
-          name: Add stretch-backports
-          command: 'echo "deb http://ftp.debian.org/debian stretch-backports main" | sudo tee -a /etc/apt/sources.list.d/backports.list'
-      - run:
-          name: Install apt dependencies
-          command: 'sudo apt-get update && sudo apt-get -t stretch-backports install libpcap0.8-dev -y'
       - run: go get -v -t -d ./...
       - run: go get golang.org/x/tools/cmd/cover
       - run: go get github.com/mattn/goveralls
