@@ -37,6 +37,4 @@ jobs:
       run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
 
     - name: check for go vulnerabilities
-      uses: kmulvey/govulncheck-action@main
-      with:
-        packages: './...'
+      uses: Templum/govulncheck-action@main
