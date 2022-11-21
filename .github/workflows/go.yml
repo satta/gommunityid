@@ -45,4 +45,6 @@ jobs:
     - name: Coveralls
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
+      run: |
+        go install github.com/mattn/goveralls@latest
+        goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
