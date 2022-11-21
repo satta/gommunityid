@@ -37,6 +37,11 @@ jobs:
     - name: Test
       run: go test -v -covermode=count -coverprofile=coverage.out ./...
 
+    - name: check for go vulnerabilities
+      uses: kmulvey/govulncheck-action@main
+      with:
+        packages: './...'
+
     - name: Coveralls
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
