@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.13
+        go-version: ^1.18
       id: go
 
     - name: Check out code into the Go module directory
@@ -25,26 +25,18 @@ jobs:
     - name: Get dependencies
       run: |
         go get -v -t -d ./...
-
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
-
-        go get golang.org/x/tools/cmd/cover
-        go get github.com/mattn/goveralls
+        go install golang.org/x/tools/cmd/cover@latest
+        go install github.com/mattn/goveralls@latest
 
     - name: Test
       run: go test -v -covermode=count -coverprofile=coverage.out ./...
+
+    - name: Coveralls
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+      run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
 
     - name: check for go vulnerabilities
       uses: kmulvey/govulncheck-action@main
       with:
         packages: './...'
-
-    - name: Coveralls
-      env:
-        COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      run: |
-        go install github.com/mattn/goveralls@latest
-        goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
