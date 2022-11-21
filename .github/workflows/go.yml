@@ -34,7 +34,7 @@ jobs:
     - name: Coveralls
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
+      run: goveralls -coverprofile=coverage.out -service=github -repotoken $COVERALLS_TOKEN
 
     - name: check for go vulnerabilities
       uses: kmulvey/govulncheck-action@main
