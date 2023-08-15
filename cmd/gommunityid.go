@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
+	"net/netip"
 	"os"
 	"strconv"
 
@@ -61,13 +61,13 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		srcip := net.ParseIP(tupleCmd.Args()[1])
-		if srcip == nil {
-			log.Fatalf("%s is not a valid IP address", tupleCmd.Args()[1])
+		srcip, err := netip.ParseAddr(tupleCmd.Args()[1])
+		if err != nil {
+			log.Fatalf("%s is not a valid IP address: %s", tupleCmd.Args()[1], err)
 		}
-		dstip := net.ParseIP(tupleCmd.Args()[2])
-		if dstip == nil {
-			log.Fatalf("%s is not a valid IP address", tupleCmd.Args()[2])
+		dstip, err := netip.ParseAddr(tupleCmd.Args()[2])
+		if err != nil {
+			log.Fatalf("%s is not a valid IP address: %s", tupleCmd.Args()[2], err)
 		}
 		srcport, err := strconv.ParseUint(tupleCmd.Args()[3], 10, 16)
 		if err != nil {

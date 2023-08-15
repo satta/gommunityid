@@ -40,15 +40,15 @@ func (cid CommunityIDv1) CalcBase64(ft FlowTuple) string {
 func (cid CommunityIDv1) Hash(ft FlowTuple) hash.Hash {
 	h := sha1.New()
 	binary.Write(h, binary.BigEndian, cid.Seed)
-	if ft.Srcip.To4() != nil {
-		binary.Write(h, binary.BigEndian, ft.Srcip.To4())
-	} else if ft.Srcip.To16() != nil {
-		binary.Write(h, binary.BigEndian, ft.Srcip.To16())
+	if ft.Srcip.Is4() {
+		binary.Write(h, binary.BigEndian, ft.Srcip.As4())
+	} else if ft.Srcip.Is6() {
+		binary.Write(h, binary.BigEndian, ft.Srcip.As16())
 	}
-	if ft.Dstip.To4() != nil {
-		binary.Write(h, binary.BigEndian, ft.Dstip.To4())
-	} else if ft.Dstip.To16() != nil {
-		binary.Write(h, binary.BigEndian, ft.Dstip.To16())
+	if ft.Dstip.Is4() {
+		binary.Write(h, binary.BigEndian, ft.Dstip.As4())
+	} else if ft.Dstip.Is6() {
+		binary.Write(h, binary.BigEndian, ft.Dstip.As16())
 	}
 	h.Write([]byte{ft.Proto, 0})
 	binary.Write(h, binary.BigEndian, ft.Srcport)

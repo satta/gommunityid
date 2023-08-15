@@ -1,14 +1,13 @@
 package gommunityid
 
 import (
-	"bytes"
-	"net"
+	"net/netip"
 )
 
 // FlowTuple is a collection of all values required for ID calculation.
 type FlowTuple struct {
-	Srcip    net.IP
-	Dstip    net.IP
+	Srcip    netip.Addr
+	Dstip    netip.Addr
 	Srcport  uint16
 	Dstport  uint16
 	Proto    uint8
@@ -18,7 +17,7 @@ type FlowTuple struct {
 // MakeFlowTuple returns a FlowTuple for the given set of communication
 // details: protocol, IPs (source, destination) and ports (source,
 // destination).
-func MakeFlowTuple(srcip, dstip net.IP, srcport, dstport uint16, proto uint8) FlowTuple {
+func MakeFlowTuple(srcip, dstip netip.Addr, srcport, dstport uint16, proto uint8) FlowTuple {
 	var isOneWay bool
 	if proto == ProtoICMP {
 		srcport, dstport, isOneWay = GetICMPv4PortEquivalents(uint8(srcport), uint8(dstport))
@@ -37,32 +36,32 @@ func MakeFlowTuple(srcip, dstip net.IP, srcport, dstport uint16, proto uint8) Fl
 }
 
 // MakeFlowTupleTCP returns a FlowTuple with the TCP protocol preconfigured.
-func MakeFlowTupleTCP(srcip, dstip net.IP, srcport, dstport uint16) FlowTuple {
+func MakeFlowTupleTCP(srcip, dstip netip.Addr, srcport, dstport uint16) FlowTuple {
 	return MakeFlowTuple(srcip, dstip, srcport, dstport, ProtoTCP)
 }
 
 // MakeFlowTupleUDP returns a FlowTuple with the UDP protocol preconfigured.
-func MakeFlowTupleUDP(srcip, dstip net.IP, srcport, dstport uint16) FlowTuple {
+func MakeFlowTupleUDP(srcip, dstip netip.Addr, srcport, dstport uint16) FlowTuple {
 	return MakeFlowTuple(srcip, dstip, srcport, dstport, ProtoUDP)
 }
 
 // MakeFlowTupleSCTP returns a FlowTuple with the SCTP protocol preconfigured.
-func MakeFlowTupleSCTP(srcip, dstip net.IP, srcport, dstport uint16) FlowTuple {
+func MakeFlowTupleSCTP(srcip, dstip netip.Addr, srcport, dstport uint16) FlowTuple {
 	return MakeFlowTuple(srcip, dstip, srcport, dstport, ProtoSCTP)
 }
 
 // MakeFlowTupleICMP returns a FlowTuple with the ICMPv4 protocol preconfigured.
-func MakeFlowTupleICMP(srcip, dstip net.IP, srcport, dstport uint16) FlowTuple {
+func MakeFlowTupleICMP(srcip, dstip netip.Addr, srcport, dstport uint16) FlowTuple {
 	return MakeFlowTuple(srcip, dstip, srcport, dstport, ProtoICMP)
 }
 
 // MakeFlowTupleICMP6 returns a FlowTuple with the ICMPv6 protocol preconfigured.
-func MakeFlowTupleICMP6(srcip, dstip net.IP, srcport, dstport uint16) FlowTuple {
+func MakeFlowTupleICMP6(srcip, dstip netip.Addr, srcport, dstport uint16) FlowTuple {
 	return MakeFlowTuple(srcip, dstip, srcport, dstport, ProtoICMP6)
 }
 
-func flowTupleOrdered(addr1, addr2 []byte, port1, port2 uint16) bool {
-	return bytes.Compare(addr1, addr2) == -1 || (bytes.Equal(addr1, addr2) && port1 < port2)
+func flowTupleOrdered(addr1, addr2 netip.Addr, port1, port2 uint16) bool {
+	return addr1.Compare(addr2) == -1 || (addr1 == addr2 && port1 < port2)
 }
 
 // IsOrdered returns true if the flow tuple direction is ordered.

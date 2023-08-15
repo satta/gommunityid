@@ -1,7 +1,7 @@
 package gommunityid
 
 import (
-	"net"
+	"net/netip"
 	"os"
 
 	"github.com/google/gopacket"
@@ -35,16 +35,18 @@ func PcapFlowTupleSource(file string) (<-chan PcapFlowTuple, error) {
 		for packet := range packetSource.Packets() {
 			var ft FlowTuple
 
-			var src, dst net.IP
+			var src, dst netip.Addr
 			ip4Layer := packet.Layer(layers.LayerTypeIPv4)
 			if ip4Layer != nil {
 				ip, _ := ip4Layer.(*layers.IPv4)
-				src, dst = ip.SrcIP, ip.DstIP
+				src, _ = netip.AddrFromSlice(ip.SrcIP)
+				dst, _ = netip.AddrFromSlice(ip.DstIP)
 			} else {
 				ip6Layer := packet.Layer(layers.LayerTypeIPv6)
 				if ip6Layer != nil {
 					ip, _ := ip6Layer.(*layers.IPv6)
-					src, dst = ip.SrcIP, ip.DstIP
+					src, _ = netip.AddrFromSlice(ip.SrcIP)
+					dst, _ = netip.AddrFromSlice(ip.DstIP)
 				} else {
 					// no IP layer found
 					continue

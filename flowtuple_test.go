@@ -1,7 +1,7 @@
 package gommunityid
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,16 +9,16 @@ import (
 
 func TestFlowTupleOrder(t *testing.T) {
 	tpl := FlowTuple{
-		Srcip:   net.IPv4(1, 2, 3, 4),
-		Dstip:   net.IPv4(4, 5, 6, 7),
+		Srcip:   netip.MustParseAddr("1.2.3.4"),
+		Dstip:   netip.MustParseAddr("4.5.6.7"),
 		Srcport: 1,
 		Dstport: 2,
 	}
 	assert.True(t, tpl.IsOrdered())
 
 	tpl2 := FlowTuple{
-		Dstip:   net.IPv4(1, 2, 3, 4),
-		Srcip:   net.IPv4(4, 5, 6, 7),
+		Dstip:   netip.MustParseAddr("1.2.3.4"),
+		Srcip:   netip.MustParseAddr("4.5.6.7"),
 		Srcport: 2,
 		Dstport: 1,
 	}

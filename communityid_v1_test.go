@@ -2,15 +2,15 @@ package gommunityid
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 type testSet struct {
-	Srcip       net.IP
-	Dstip       net.IP
+	Srcip       netip.Addr
+	Dstip       netip.Addr
 	Srcport     uint16
 	Dstport     uint16
 	Base64Seed0 string
@@ -18,7 +18,7 @@ type testSet struct {
 	Base64Seed1 string
 }
 
-type makeFunc func(net.IP, net.IP, uint16, uint16) FlowTuple
+type makeFunc func(netip.Addr, netip.Addr, uint16, uint16) FlowTuple
 
 func verifyTuples(t *testing.T, ts []testSet, mf makeFunc) {
 	cid0 := CommunityIDv1{
@@ -39,8 +39,8 @@ func verifyTuples(t *testing.T, ts []testSet, mf makeFunc) {
 func TestCommunityIDv1ICMP(t *testing.T) {
 	verifyTuples(t, []testSet{
 		{
-			Srcip:       net.IPv4(192, 168, 0, 89),
-			Dstip:       net.IPv4(192, 168, 0, 1),
+			Srcip:       netip.MustParseAddr("192.168.0.89"),
+			Dstip:       netip.MustParseAddr("192.168.0.1"),
 			Srcport:     8,
 			Dstport:     0,
 			Base64Seed0: "1:X0snYXpgwiv9TZtqg64sgzUn6Dk=",
@@ -48,8 +48,8 @@ func TestCommunityIDv1ICMP(t *testing.T) {
 			Base64Seed1: "1:03g6IloqVBdcZlPyX8r0hgoE7kA=",
 		},
 		{
-			Srcip:       net.IPv4(192, 168, 0, 1),
-			Dstip:       net.IPv4(192, 168, 0, 89),
+			Srcip:       netip.MustParseAddr("192.168.0.1"),
+			Dstip:       netip.MustParseAddr("192.168.0.89"),
 			Srcport:     0,
 			Dstport:     8,
 			Base64Seed0: "1:X0snYXpgwiv9TZtqg64sgzUn6Dk=",
@@ -57,8 +57,8 @@ func TestCommunityIDv1ICMP(t *testing.T) {
 			Base64Seed1: "1:03g6IloqVBdcZlPyX8r0hgoE7kA=",
 		},
 		{
-			Srcip:       net.IPv4(192, 168, 0, 89),
-			Dstip:       net.IPv4(192, 168, 0, 1),
+			Srcip:       netip.MustParseAddr("192.168.0.89"),
+			Dstip:       netip.MustParseAddr("192.168.0.1"),
 			Srcport:     20,
 			Dstport:     0,
 			Base64Seed0: "1:3o2RFccXzUgjl7zDpqmY7yJi8rI=",
@@ -66,8 +66,8 @@ func TestCommunityIDv1ICMP(t *testing.T) {
 			Base64Seed1: "1:lCXHHxavE1Vq3oX9NH5ladQg02o=",
 		},
 		{
-			Srcip:       net.IPv4(192, 168, 0, 89),
-			Dstip:       net.IPv4(192, 168, 0, 1),
+			Srcip:       netip.MustParseAddr("192.168.0.89"),
+			Dstip:       netip.MustParseAddr("192.168.0.1"),
 			Srcport:     20,
 			Dstport:     1,
 			Base64Seed0: "1:tz/fHIDUHs19NkixVVoOZywde+I=",
@@ -75,8 +75,8 @@ func TestCommunityIDv1ICMP(t *testing.T) {
 			Base64Seed1: "1:Ie3wmFyxiEyikbsbcO03d2nh+PM=",
 		},
 		{
-			Srcip:       net.IPv4(192, 168, 0, 1),
-			Dstip:       net.IPv4(192, 168, 0, 89),
+			Srcip:       netip.MustParseAddr("192.168.0.1"),
+			Dstip:       netip.MustParseAddr("192.168.0.89"),
 			Srcport:     0,
 			Dstport:     20,
 			Base64Seed0: "1:X0snYXpgwiv9TZtqg64sgzUn6Dk=",
@@ -90,8 +90,8 @@ func TestCommunityIDv1ICMP(t *testing.T) {
 func TestCommunityIDv1ICMP6(t *testing.T) {
 	verifyTuples(t, []testSet{
 		{
-			Srcip:       net.ParseIP("fe80::200:86ff:fe05:80da"),
-			Dstip:       net.ParseIP("fe80::260:97ff:fe07:69ea"),
+			Srcip:       netip.MustParseAddr("fe80::200:86ff:fe05:80da"),
+			Dstip:       netip.MustParseAddr("fe80::260:97ff:fe07:69ea"),
 			Srcport:     135,
 			Dstport:     0,
 			Base64Seed0: "1:dGHyGvjMfljg6Bppwm3bg0LO8TY=",
@@ -99,8 +99,8 @@ func TestCommunityIDv1ICMP6(t *testing.T) {
 			Base64Seed1: "1:kHa1FhMYIT6Ym2Vm2AOtoOARDzY=",
 		},
 		{
-			Srcip:       net.ParseIP("fe80::260:97ff:fe07:69ea"),
-			Dstip:       net.ParseIP("fe80::200:86ff:fe05:80da"),
+			Srcip:       netip.MustParseAddr("fe80::260:97ff:fe07:69ea"),
+			Dstip:       netip.MustParseAddr("fe80::200:86ff:fe05:80da"),
 			Srcport:     136,
 			Dstport:     0,
 			Base64Seed0: "1:dGHyGvjMfljg6Bppwm3bg0LO8TY=",
@@ -108,8 +108,8 @@ func TestCommunityIDv1ICMP6(t *testing.T) {
 			Base64Seed1: "1:kHa1FhMYIT6Ym2Vm2AOtoOARDzY=",
 		},
 		{
-			Srcip:       net.ParseIP("3ffe:507:0:1:260:97ff:fe07:69ea"),
-			Dstip:       net.ParseIP("3ffe:507:0:1:200:86ff:fe05:80da"),
+			Srcip:       netip.MustParseAddr("3ffe:507:0:1:260:97ff:fe07:69ea"),
+			Dstip:       netip.MustParseAddr("3ffe:507:0:1:200:86ff:fe05:80da"),
 			Srcport:     3,
 			Dstport:     0,
 			Base64Seed0: "1:NdobDX8PQNJbAyfkWxhtL2Pqp5w=",
@@ -117,8 +117,8 @@ func TestCommunityIDv1ICMP6(t *testing.T) {
 			Base64Seed1: "1:OlOWx9psIbBFi7lOCw/4MhlKR9M=",
 		},
 		{
-			Srcip:       net.ParseIP("3ffe:507:0:1:200:86ff:fe05:80da"),
-			Dstip:       net.ParseIP("3ffe:507:0:1:260:97ff:fe07:69ea"),
+			Srcip:       netip.MustParseAddr("3ffe:507:0:1:200:86ff:fe05:80da"),
+			Dstip:       netip.MustParseAddr("3ffe:507:0:1:260:97ff:fe07:69ea"),
 			Srcport:     3,
 			Dstport:     0,
 			Base64Seed0: "1:/OGBt9BN1ofenrmSPWYicpij2Vc=",
@@ -132,8 +132,8 @@ func TestCommunityIDv1ICMP6(t *testing.T) {
 func TestCommunityIDv1SCTP(t *testing.T) {
 	verifyTuples(t, []testSet{
 		{
-			Srcip:       net.IPv4(192, 168, 170, 8),
-			Dstip:       net.IPv4(192, 168, 170, 56),
+			Srcip:       netip.MustParseAddr("192.168.170.8"),
+			Dstip:       netip.MustParseAddr("192.168.170.56"),
 			Srcport:     7,
 			Dstport:     80,
 			Base64Seed0: "1:jQgCxbku+pNGw8WPbEc/TS/uTpQ=",
@@ -141,8 +141,8 @@ func TestCommunityIDv1SCTP(t *testing.T) {
 			Base64Seed1: "1:Y1/0jQg6e+I3ZwZZ9LP65DNbTXU=",
 		},
 		{
-			Srcip:       net.IPv4(192, 168, 170, 56),
-			Dstip:       net.IPv4(192, 168, 170, 8),
+			Srcip:       netip.MustParseAddr("192.168.170.56"),
+			Dstip:       netip.MustParseAddr("192.168.170.8"),
 			Srcport:     80,
 			Dstport:     7,
 			Base64Seed0: "1:jQgCxbku+pNGw8WPbEc/TS/uTpQ=",
@@ -156,8 +156,8 @@ func TestCommunityIDv1SCTP(t *testing.T) {
 func TestCommunityIDv1TCP(t *testing.T) {
 	verifyTuples(t, []testSet{
 		{
-			Srcip:       net.IPv4(128, 232, 110, 120),
-			Dstip:       net.IPv4(66, 35, 250, 204),
+			Srcip:       netip.MustParseAddr("128.232.110.120"),
+			Dstip:       netip.MustParseAddr("66.35.250.204"),
 			Srcport:     34855,
 			Dstport:     80,
 			Base64Seed0: "1:LQU9qZlK+B5F3KDmev6m5PMibrg=",
@@ -165,8 +165,8 @@ func TestCommunityIDv1TCP(t *testing.T) {
 			Base64Seed1: "1:3V71V58M3Ksw/yuFALMcW0LAHvc=",
 		},
 		{
-			Srcip:       net.IPv4(66, 35, 250, 204),
-			Dstip:       net.IPv4(128, 232, 110, 120),
+			Srcip:       netip.MustParseAddr("66.35.250.204"),
+			Dstip:       netip.MustParseAddr("128.232.110.120"),
 			Srcport:     80,
 			Dstport:     34855,
 			Base64Seed0: "1:LQU9qZlK+B5F3KDmev6m5PMibrg=",
@@ -180,8 +180,8 @@ func TestCommunityIDv1TCP(t *testing.T) {
 func TestCommunityIDv1UDP(t *testing.T) {
 	verifyTuples(t, []testSet{
 		{
-			Srcip:       net.IPv4(192, 168, 1, 52),
-			Dstip:       net.IPv4(8, 8, 8, 8),
+			Srcip:       netip.MustParseAddr("192.168.1.52"),
+			Dstip:       netip.MustParseAddr("8.8.8.8"),
 			Srcport:     54585,
 			Dstport:     53,
 			Base64Seed0: "1:d/FP5EW3wiY1vCndhwleRRKHowQ=",
@@ -189,8 +189,8 @@ func TestCommunityIDv1UDP(t *testing.T) {
 			Base64Seed1: "1:Q9We8WO3piVF8yEQBNJF4uiSVrI=",
 		},
 		{
-			Srcip:       net.IPv4(8, 8, 8, 8),
-			Dstip:       net.IPv4(192, 168, 1, 52),
+			Srcip:       netip.MustParseAddr("8.8.8.8"),
+			Dstip:       netip.MustParseAddr("192.168.1.52"),
 			Srcport:     53,
 			Dstport:     54585,
 			Base64Seed0: "1:d/FP5EW3wiY1vCndhwleRRKHowQ=",
