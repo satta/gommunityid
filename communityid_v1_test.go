@@ -200,3 +200,24 @@ func TestCommunityIDv1UDP(t *testing.T) {
 	},
 		MakeFlowTupleUDP)
 }
+
+func BenchmarkIsOrdered(b *testing.B) {
+	tpl := FlowTuple{
+		Dstip:   netip.MustParseAddr("1.2.3.4"),
+		Srcip:   netip.MustParseAddr("4.5.6.7"),
+		Srcport: 2,
+		Dstport: 1,
+		Proto:   6,
+	}
+
+	cid := CommunityIDv1{
+		Seed: 0,
+	}
+
+	b.ResetTimer()
+	b.ReportAllocs()
+	for n := 0; n < b.N; n++ {
+		cid.Calc(tpl)
+	}
+
+}
