@@ -6,6 +6,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
+
+	"github.com/samber/lo"
 )
 
 // CommunityIDv1 encapsulates the calculation code for version 1 of the
@@ -38,21 +40,34 @@ func (cid CommunityIDv1) CalcBase64(ft FlowTuple) string {
 // Hash returns a hash.Hash instance (SHA1) in a state corresponding to all
 // input value already dealt with in the hash.
 func (cid CommunityIDv1) Hash(ft FlowTuple) hash.Hash {
+	const (
+		maxParameterSizeIPv6 = 40
+		maxParameterSizeIPv4 = 16
+	)
+	buffer := lo.TernaryF(ft.Srcip.To4() != nil && ft.Dstip.To4() != nil, func() []byte {
+		return make([]byte, 2, maxParameterSizeIPv4)
+	}, func() []byte {
+		return make([]byte, 2, maxParameterSizeIPv6)
+	})
+
+	binary.BigEndian.PutUint16(buffer, cid.Seed)
+
+	if v4SrcAddress := ft.Srcip.To4(); v4SrcAddress != nil {
+		buffer = append(buffer, v4SrcAddress...)
+	} else if v6SrcAddress := ft.Srcip.To16(); v6SrcAddress != nil {
+		buffer = append(buffer, v6SrcAddress...)
+	}
+	if v4DstAddress := ft.Dstip.To4(); v4DstAddress != nil {
+		buffer = append(buffer, v4DstAddress...)
+	} else if v6DstAddress := ft.Dstip.To16(); v6DstAddress != nil {
+		buffer = append(buffer, v6DstAddress...)
+	}
+	buffer = append(buffer, ft.Proto, 0)
+	buffer = binary.BigEndian.AppendUint16(buffer, ft.Srcport)
+	buffer = binary.BigEndian.AppendUint16(buffer, ft.Dstport)
+
 	h := sha1.New()
-	binary.Write(h, binary.BigEndian, cid.Seed)
-	if ft.Srcip.To4() != nil {
-		binary.Write(h, binary.BigEndian, ft.Srcip.To4())
-	} else if ft.Srcip.To16() != nil {
-		binary.Write(h, binary.BigEndian, ft.Srcip.To16())
-	}
-	if ft.Dstip.To4() != nil {
-		binary.Write(h, binary.BigEndian, ft.Dstip.To4())
-	} else if ft.Dstip.To16() != nil {
-		binary.Write(h, binary.BigEndian, ft.Dstip.To16())
-	}
-	h.Write([]byte{ft.Proto, 0})
-	binary.Write(h, binary.BigEndian, ft.Srcport)
-	binary.Write(h, binary.BigEndian, ft.Dstport)
+	h.Write(buffer)
 	return h
 }
 
