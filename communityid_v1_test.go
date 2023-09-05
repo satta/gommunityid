@@ -200,3 +200,40 @@ func TestCommunityIDv1UDP(t *testing.T) {
 	},
 		MakeFlowTupleUDP)
 }
+
+func BenchmarkCalc(b *testing.B) {
+	v4Tpl := FlowTuple{
+		Dstip:   net.ParseIP("1.2.3.4"),
+		Srcip:   net.ParseIP("4.5.6.7"),
+		Srcport: 2,
+		Dstport: 1,
+		Proto:   6,
+	}
+	v6Tpl := FlowTuple{
+		Dstip:   net.ParseIP("fe80::200:86ff:fe05:80da"),
+		Srcip:   net.ParseIP("fe80::260:97ff:fe07:69ea"),
+		Srcport: 2,
+		Dstport: 1,
+		Proto:   6,
+	}
+
+	cid := CommunityIDv1{
+		Seed: 0,
+	}
+
+	b.Run("IPv4", func(b *testing.B) {
+		b.ResetTimer()
+		b.ReportAllocs()
+		for n := 0; n < b.N; n++ {
+			cid.Calc(v4Tpl)
+		}
+	})
+
+	b.Run("IPv6", func(b *testing.B) {
+		b.ResetTimer()
+		b.ReportAllocs()
+		for n := 0; n < b.N; n++ {
+			cid.Calc(v6Tpl)
+		}
+	})
+}
