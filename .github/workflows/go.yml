@@ -35,6 +35,8 @@ jobs:
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken $COVERALLS_TOKEN
+      # Do not run on pull requests since we don't have the token available there.
+      if: ${{ github.event_name != 'pull_request' }}
 
     - name: check for go vulnerabilities
       uses: Templum/govulncheck-action@main
