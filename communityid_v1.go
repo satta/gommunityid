@@ -6,8 +6,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
-
-	"github.com/samber/lo"
 )
 
 // CommunityIDv1 encapsulates the calculation code for version 1 of the
@@ -44,17 +42,15 @@ func (cid CommunityIDv1) Hash(ft FlowTuple) hash.Hash {
 		maxParameterSizeIPv6 = 40
 		maxParameterSizeIPv4 = 16
 	)
-	buffer := lo.TernaryF(ft.Srcip.To4() != nil && ft.Dstip.To4() != nil, func() []byte {
-		return make([]byte, 2, maxParameterSizeIPv4)
-	}, func() []byte {
-		return make([]byte, 2, maxParameterSizeIPv6)
-	})
+	buffer := make([]byte, 2, maxParameterSizeIPv4)
 
 	binary.BigEndian.PutUint16(buffer, cid.Seed)
 
 	if v4SrcAddress := ft.Srcip.To4(); v4SrcAddress != nil {
 		buffer = append(buffer, v4SrcAddress...)
 	} else if v6SrcAddress := ft.Srcip.To16(); v6SrcAddress != nil {
+		// As we are now dealing with IPv6, grow the buffer once to fit both addresses.
+		buffer = append(make([]byte, 0, maxParameterSizeIPv6), buffer...)
 		buffer = append(buffer, v6SrcAddress...)
 	}
 	if v4DstAddress := ft.Dstip.To4(); v4DstAddress != nil {
